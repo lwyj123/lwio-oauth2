@@ -1,0 +1,34 @@
+{
+  "name": "lwio-oauth2",
+  "version": "0.0.1",
+  "description": "a oauth2 server for personal usage",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lwyj123/lwio-oauth2.git"
+  },
+  "keywords": [
+    "oauth"
+  ],
+  "author": "lwio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lwyj123/lwio-oauth2/issues"
+  },
+  "homepage": "https://github.com/lwyj123/lwio-oauth2#readme",
+  "dependencies": {
+    "consolidate": "^0.15.1",
+    "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "koa-session": "^5.8.1",
+    "koa2-oauth-server": "github:waychan23/koa2-oauth-server",
+    "oauth2-server": "^3.0.0",
+    "request": "^2.87.0",
+    "simple-memory-storage": "github:waychan23/simple-memory-storage"
+  }
+}
