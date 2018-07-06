@@ -8,7 +8,7 @@ const sample_app = {
 	'name': 'Sample App',//custom field
 	'scope': 'user_info:read',//a custom scope, indicating that this client is allowed to be authorized to read the user's information
 	'grants': [ 'authorization_code', 'refresh_token' ],
-	'redirectUris': [ 'http://localhost:3001/receiveGrant' ],
+	'redirectUris': [ 'http://localhost:9528/receive-grant' ],
 	'accessTokenLifetime': 7200, //not required, default is 3600,
 	'refreshTokenLifetime': 3600 * 24 * 30 //not required, default is 2 weeks
 };
