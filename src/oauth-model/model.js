@@ -1,3 +1,19 @@
+const JWT = require('jsonwebtoken');
+
+// based on https://github.com/thomseddon/node-oauth2-server/tree/master/examples/memory
+
+const JWT_ISSUER = 'accounts.lwio.me';
+const JWT_SECRET_FOR_ACCESS_TOKEN = 'XT6PRpRuehFsyMa2';
+const JWT_SECRET_FOR_REFRESH_TOKEN = 'JWPVzFWkqGxoE2C2';
+
+const getUserByUsername = function(username) {
+  return {
+		id: '38jfoqu31',
+		nickname: 'fucktest',
+		username: 'fuckuser'
+	}
+};
+
 
 module.exports = OauthModel;
 
@@ -31,19 +47,67 @@ function OauthModel(options={}){
 	return self;
 }
 
+// the expiry times should be consistent between the oauth2-server settings
+// and the JWT settings (not essential, but makes sense)
+OauthModel.JWT_ACCESS_TOKEN_EXPIRY_SECONDS = 1800;             // 30 minutes
+OauthModel.JWT_REFRESH_TOKEN_EXPIRY_SECONDS = 1209600;         // 14 days
+
 //We list all the api described in the Model Specification but implement only those we need.
 //Model mothods can either receive a callback or return a Promise(or use async/await).
 //In this example, we use async/await.
 
-/**
- * not implemented, use default
- */
-OauthModel.prototype.generateAccessToken = undefined;
+OauthModel.prototype.generateAccessToken = function(client, user, scope, callback) {
+	var token;
+  var secret;
+  var exp = new Date();
+  var payload = {
+    // public claims
+    iss: JWT_ISSUER,   // issuer
+		//    exp: exp,        // the expiry date is set below - expiry depends on type
+		//    jti: '',         // unique id for this token - needed if we keep an store of issued tokens?
+		// private claims
+		scope: scope,
+    username: user.username
+  };
+  var options = {
+    algorithm: 'HS256'  // HMAC using SHA-256 hash algorithm
+  };
 
-/**
- * not implemented, use default
- */
-OauthModel.prototype.generateRefreshToken = undefined;
+	secret = JWT_SECRET_FOR_ACCESS_TOKEN;
+	exp.setSeconds(exp.getSeconds() + OauthModel.JWT_ACCESS_TOKEN_EXPIRY_SECONDS);
+  payload.exp = exp.getTime();
+
+  token = JWT.sign(payload, secret, options);
+
+  callback(false, token);
+};
+
+OauthModel.prototype.generateRefreshToken = function(client, user, scope, callback) {
+	var token;
+  var secret;
+  var exp = new Date();
+  var payload = {
+    // public claims
+    iss: JWT_ISSUER,   // issuer
+		//    exp: exp,        // the expiry date is set below - expiry depends on type
+		//    jti: '',         // unique id for this token - needed if we keep an store of issued tokens?
+    // private claims
+		username: user.username,
+		scope: scope
+  };
+  var options = {
+    algorithm: 'HS256'  // HMAC using SHA-256 hash algorithm
+  };
+
+	secret = JWT_SECRET_FOR_REFRESH_TOKEN;
+	exp.setSeconds(exp.getSeconds() + OauthModel.JWT_REFRESH_TOKEN_EXPIRY_SECONDS);
+
+  payload.exp = exp.getTime();
+
+  token = JWT.sign(payload, secret, options);
+
+  callback(false, token);
+};
 
 /**
  * not implemented, use default
@@ -61,19 +125,24 @@ OauthModel.prototype.generateAuthorizationCode = undefined;
  *         {String} token.client.id - string id of the oauth client
  *         {Object} token.user - the user which this access token represents, this data structure of the user object is not part of the Model Specification, and what it should be is completely up to you. In this example, we use { username: 'someUserName' } where the 'username' field is used to uniquely identify an user in the user database.
  */
-OauthModel.prototype.getAccessToken = async function(accessToken){
-	var self = this,
-		token = self.accessTokenStore.get(accessToken),
-		client, user;
+OauthModel.prototype.getAccessToken = async function(accessToken, callback){
+	return JWT.verify(accessToken, JWT_SECRET_FOR_ACCESS_TOKEN, function(err, decoded) {
 
-	if(!token){
-		return null;
-	}
+    if (err) {
+      return callback(err, false);   // the err contains JWT error data
+    }
 
-	token.client = { id: token.client };
-	token.user = { username: token.user };
+    // other verifications could be performed here
+    // eg. that the jti is valid
 
-	return token;
+    // we could pass the payload straight out we use an object with the
+    // mandatory keys expected by oauth2-server, plus any other private
+    // claims that are useful
+    return callback(false, {
+      expires: new Date(decoded.exp),
+      user: getUserById(decoded.username)
+    });
+  });
 };
 
 /**
@@ -99,7 +168,7 @@ OauthModel.prototype.getRefreshToken = async function(refreshToken){
 	}
 
 	token.client = { id: token.client };
-	token.user = { username: token.user };
+	token.user = { id: token.user };
 
 	return token;
 };
@@ -144,7 +213,7 @@ OauthModel.prototype.getAuthorizationCode = async function(authorizationCode){
  *         {Number} [refreshTokenLifetime=3600 * 24 * 14] - define the lifetime of an refresh token in seconds, default is 2 weeks
 
  */
-OauthModel.prototype.getClient = async function(clientId, clientSecret){
+OauthModel.prototype.getClient = async function(clientId, clientSecret, callback){
 	var self = this,
 		registry = self.clientRegistry,
 		client;
@@ -152,15 +221,15 @@ OauthModel.prototype.getClient = async function(clientId, clientSecret){
 	client = registry.clients[clientId];
 
 	if(!client){
-		return null;
+		return callback(false, null);
 	}
 
 	//the clientSecret is not needed in the 'authorize' phase using 'code' response type
 	if(clientSecret && client.clientSecret != clientSecret){
-		return null;
+		return callback(false, null)
 	}
 
-	return client;
+	return callback(false, client);
 };
 
 // not implemented, only needed when using 'password' grant type
@@ -180,7 +249,7 @@ OauthModel.prototype.getUserFromClient = null;
  * @param {Object} client - the client object - @see OauthModel.prototype.getClient
  * @param {String} client.id - the client id
  * @param {Object} user - the user object @see OauthModel.prototype.getAccessToken
- * @param {String} username - the user identifier
+ * @param {String} id - the user identifier
  * @return {Object} token - the token object saved, same as the parameter 'token'
  */
 OauthModel.prototype.saveToken = async function(token, client, user){

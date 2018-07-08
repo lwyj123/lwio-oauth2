@@ -1,11 +1,12 @@
 const KoaRouter = require('koa-router')
 
-const apiControllers = require('../controllers/api.js')
+const userControllers = require('../controllers/user.js')
 
 const router = new KoaRouter({ prefix: '/api' })
 
 router
-  .get('/user/detail', apiControllers.GetUserInfo)
+  .get('/users/:username', userControllers.GetUserInfoByUsername)
+  .post('/users', userControllers.Signup)
   // .all('/upload', controllers.upload.default)
   // .get('/api/:name', controllers.api.Get)
   // .post('/api/:name', controllers.api.Post)

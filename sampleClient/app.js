@@ -18,7 +18,7 @@ const oauthServerInfo = {
         'token': 'http://localhost:3002/oauth/token'
     },
     api: {
-        'getUserInfo': 'http://localhost:3002/api/user/detail'
+        'getUserInfo': 'http://localhost:3002/api/users'
     }
 };
 

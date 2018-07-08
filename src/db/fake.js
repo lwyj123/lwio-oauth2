@@ -4,11 +4,9 @@ const db = new MemoryStorage();
 
 //pre-store an user for the example
 db.set('lwio', {
-    'username': 'lwio',
-    'password': 'lwio',
-    'firstName': 'Yuyi',
-    'lastName': 'Liang',
-    'hobbies': [ 'coding', 'music' ]
+    id: '38jfoqu31',
+    nickname: 'fucktest',
+    username: 'fuckuser'
 });
 
 /**

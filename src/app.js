@@ -8,6 +8,8 @@ const routes = require('./routes/index')
 const app = new koa();
 const cors = require('koa2-cors');
 
+const db = require('./db/mongodb')
+
 app.keys = [ 'some-keys-to-sign-cookies-by-koa-session' ];
 
 app.use(bodyParser());
