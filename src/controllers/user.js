@@ -9,7 +9,7 @@ class UserApi extends BaseController {
     const user = await UserModel.getUserInfoByUsername(ctx.params.username)
     if(user) {
       ctx.body = {
-        ...user
+        ...user.toObject()
       }
     } else {
       ctx.status = 404
@@ -19,8 +19,12 @@ class UserApi extends BaseController {
     }
   }
   async Signup (ctx) {
-    const userinfo = {
-
+    const { ...params } = ctx.request.body
+    const newUser = await UserModel.createUser({
+      ...params
+    })
+    ctx.body = {
+      ...newUser.toObject()
     }
   }
 }

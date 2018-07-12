@@ -7,6 +7,7 @@ const routes = require('./routes/index')
 
 const app = new koa();
 const cors = require('koa2-cors');
+const ErrorRoutesCatch = require('./middleware/ErrorRoutesCatch')
 
 const db = require('./db/mongodb')
 
@@ -21,6 +22,7 @@ app.use(async (ctx, next) => {
     await next();
 });
 
+app.use(ErrorRoutesCatch())
 app.use(oauthRouter(app, { 'prefix': '/oauth' }).routes());
 app.use(routes);
 

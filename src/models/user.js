@@ -37,10 +37,12 @@ const UserSchema = new Schema({
   }
 })
 
+
 UserSchema.set('toObject', {
   transform: function (doc, ret, options) {
     ret.id = ret._id
     delete ret._id
+    delete ret.password
     delete ret.__v
   }
 })
@@ -69,7 +71,10 @@ UserSchema.pre('save', function (next) {
 UserSchema.methods.comparePassword = function (passw, cb) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(passw, this.password, (err, isMatch) => {
-      cb(err || null, isMatch)
+      cb && cb(err || null, isMatch)
+      if(err) {
+        reject('password did not match')
+      }
       resolve()
     })
   })
@@ -77,19 +82,47 @@ UserSchema.methods.comparePassword = function (passw, cb) {
 
 UserSchema.statics.getUserInfoByUsername = async function (username) {
   const [user] = await this.find({username: username})
-  if(user.username) {
-    return user.toObject()
+  if(user && user.username) {
+    return user
   }
   return null
 }
 
 UserSchema.statics.createUser = async function ({
-
+  username,
+  phone,
+  email,
+  password,
+  nickname,
+  meta
 }) {
-
+  const [userExist] = await this.find({$or: [
+    { username: username },
+    { phone: phone },
+    { email: email }
+  ]})
+  if(userExist && userExist.username === username) {
+    throw Error('duplicate username')
+  }
+  if(userExist && userExist.phone === phone) {
+    throw Error('duplicate phone')
+  }
+  if(userExist && userExist.email === email) {
+    throw Error('duplicate email')
+  }
+  if(!password) {
+    throw Error('need password')
+  }
+  const user = new this({
+    username,
+    phone,
+    email,
+    password,
+    nickname,
+    meta
+  })
+  const userDoc = await user.save()
+  return userDoc
 }
-
-
-
 
 module.exports = mongoose.model('User', UserSchema)

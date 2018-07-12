@@ -4,9 +4,11 @@ const simpleMemoryStore = require('simple-memory-storage');
 const consolidate = require('consolidate');
 const path = require('path');
 
-const userDb = require('../db/fake');
+const UserModel = require('../models/user')
 const oauthModel = require('../oauth-model/model');
 const localFileClientRegistry = require('../oauth-model/client-registry');
+
+const qs = require('qs');
 
 const CSRF_TOKEN_EXPIRES_IN = 1000 * 60 * 2;// 2 minutes
 
@@ -34,6 +36,9 @@ function getOauthRouter(app, options={}){
 	});
 
 	oauthRouter.post('/login', login);
+
+	oauthRouter.get('/signup', forwardToSignup)
+	oauthRouter.post('/signup', signup)
 
 	//check if the user has logged, if not, redirect to login page, otherwise redirect to the authorization confirm page
 	oauthRouter.get('/authorize', checkLogin);
@@ -81,7 +86,15 @@ async function forwardToLogin(ctx, callbackUri){
 	await forwardToView(ctx, 'login', {
 		//when logged in successfully, redirect back to the original request url
 		'callbackUri': Buffer.from(callbackUri, 'utf-8').toString('base64'),
-		'loginUrl': '/oauth/login'
+		'loginUrl': '/oauth/login',
+		'returnTo': encodeURIComponent(ctx.request.href)
+	});
+}
+
+async function forwardToSignup(ctx){
+	await forwardToView(ctx, 'signup', {
+		'signupUrl': '/oauth/signup',
+		'returnTo': ctx.request.query.return_to
 	});
 }
 
@@ -185,9 +198,9 @@ async function login(ctx, next){
 
 	callbackUri = Buffer.from(callbackUri, 'base64').toString('utf-8');
 
-	user = userDb.get(username);	
+	user = await UserModel.getUserInfoByUsername(username)
 
-	if(!user || user.password != password){
+	if(!user || await user.comparePassword(password)){
 		await forwardToLogin(ctx, callbackUri);
 		return;
 	}
@@ -197,4 +210,20 @@ async function login(ctx, next){
 	ctx.session.loginUser = { 'username': username };
 
 	ctx.redirect(callbackUri);
+}
+
+async function signup(ctx, next) {
+	var returnTo = ctx.request.body.return_to,
+	{ email, username, nickname, password } = ctx.request.body,
+	user;
+
+	if(!returnTo || !username || !password || !email || !nickname){
+		return ctx.status = 400;
+	}
+
+	//signup successfully
+
+	ctx.session.loginUser = { 'username': username };
+
+	ctx.redirect(returnTo);
 }

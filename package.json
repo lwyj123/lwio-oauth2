@@ -33,6 +33,7 @@
     "koa2-oauth-server": "github:lwyj123/koa2-oauth-server",
     "mongoose": "^5.2.1",
     "oauth2-server": "^3.0.0",
+    "qs": "^6.5.2",
     "request": "^2.87.0",
     "simple-memory-storage": "github:waychan23/simple-memory-storage"
   }

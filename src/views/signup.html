@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Login</title>
+        <title>Signup</title>
         <!-- <link href="./login.css" rel="stylesheet" type="text/css"> -->
         <style>
             body.dark-theme {
@@ -45,12 +45,28 @@
     </head>
     <body class="dark-theme">
         <div class="signin-module">
-            <form action="<%= loginUrl %>" method="POST">
-                <div class="field email optional user_username">
+            <form action="<%= signupUrl %>" method="POST">
+                <div class="field email user_email">
                     <div class="field_value">
                         <div class="form-field">
                             <div class="prefix"><i class="icon-moon-envelope "></i></div>
-                            <input id="user_email" name="username" placeholder="enter your username" size="30" type="text">
+                            <input id="user_email" name="email" placeholder="enter your email" size="30" type="email">
+                        </div>
+                    </div>
+                </div>
+                <div class="field username user_username">
+                    <div class="field_value">
+                        <div class="form-field">
+                            <div class="prefix"><i class="icon-moon-envelope "></i></div>
+                            <input id="user_username" name="username" placeholder="enter your username" size="30" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="field nickname user_nickname">
+                    <div class="field_value">
+                        <div class="form-field">
+                            <div class="prefix"><i class="icon-moon-envelope "></i></div>
+                            <input id="user_nickname" name="nickname" placeholder="enter your nickname" size="30" type="text">
                         </div>
                     </div>
                 </div>
@@ -62,10 +78,9 @@
                         </div>
                     </div>
                 </div>
-                <a href="/oauth/signup?return_to=<%= returnTo %>">No Account ? Sign up</a>
-                <button class="btn is-dark is-red-text no-border is-scaled" type="submit">Log In</button>
+                <button class="btn is-dark is-red-text no-border is-scaled" type="submit">Signup</button>
 
-                <input type="hidden" name="callback_uri" value="<%= callbackUri %>">
+                <input type="hidden" name="return_to" value="<%= returnTo %>">
             </form>
         </div>
     </body>
