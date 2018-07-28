@@ -45,7 +45,7 @@
     </head>
     <body class="dark-theme">
         <div class="signin-module">
-            <form action="<%= loginUrl %>" method="POST">
+            <form action="<%= loginSubmitUrl %>" method="POST">
                 <div class="field email optional user_username">
                     <div class="field_value">
                         <div class="form-field">
@@ -62,10 +62,10 @@
                         </div>
                     </div>
                 </div>
-                <a href="/oauth/signup?return_to=<%= returnTo %>">No Account ? Sign up</a>
+                <a href="/oauth/signup?return_to=<%= return_to %>">No Account ? Sign up</a>
                 <button class="btn is-dark is-red-text no-border is-scaled" type="submit">Log In</button>
 
-                <input type="hidden" name="callback_uri" value="<%= callbackUri %>">
+                <input type="hidden" name="return_to" value="<%= return_to %>">
             </form>
         </div>
     </body>

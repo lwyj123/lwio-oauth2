@@ -2,16 +2,16 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Confirm Authorization to: <%- clientName %></title>
+        <title>Confirm Authorization to: <%- client.name %></title>
     </head>
     <body>
         <form id="confirm-form">
             <h3>User Authorization</h3>
             <div>
-                <p>Dear <%- username %>, application <%- clientName %> wants the following access to your data in the OAuth Protected Resource Server:</p>
+                <p>Dear <%- loginUser.username %>, application <%- client.name %> wants the following access to your data in the OAuth Protected Resource Server:</p>
                 <ul>
                     <% scopes.forEach(function(s){ %>
-                    <li><%- s.desc %></li>
+                    <li><%- s %></li>
                     <% }) %>
                 </ul>
                 <p>Do you agree?</p>
@@ -19,13 +19,11 @@
             <button id="agree-btn">Agree</button>
             <button id="deny-btn">Deny</button>
             <button id="logout-btn">Log out</button>
-            <input id="csrf-token-input" type="hidden" name="csrfToken" value="<%- csrfToken %>"/>
         </form>
-        <input id="oauth-uri-input" type="hidden" name="oauth_uri" value="<%= oauthUri %>"/>
         <script type="text/javascript">
         var form = byId('confirm-form'),
-            oauthUri = byId('oauth-uri-input').value,
-            csrfToken = byId('csrf-token-input').value,
+            // oauthUri = byId('oauth-uri-input').value,
+            // csrfToken = byId('csrf-token-input').value,
             agreeBtn = byId('agree-btn'),
             denyBtn = byId('deny-btn'),
             logoutBtn = byId('logout-btn');
@@ -35,16 +33,16 @@
         };
 
         agreeBtn.onclick = function(){
-            window.location.href = oauthUri+'&agree=true&csrfToken='+encodeURIComponent(csrfToken);
+            window.location.href = "<%- client.redirect_uri %>?token=<%- accessToken %>&state=<%- state %>";
         };
 
-        denyBtn.onclick = function(){
-            window.location.href = oauthUri+'&deny=true&csrfToken='+encodeURIComponent(csrfToken);
-        };
+        // denyBtn.onclick = function(){
+        //     window.location.href = oauthUri+'&deny=true&csrfToken='+encodeURIComponent(csrfToken);
+        // };
 
-        logoutBtn.onclick = function(){
-            window.location.href = oauthUri+'&logout=true&csrfToken='+encodeURIComponent(csrfToken);
-        };
+        // logoutBtn.onclick = function(){
+        //     window.location.href = oauthUri+'&logout=true&csrfToken='+encodeURIComponent(csrfToken);
+        // };
 
         function byId(id){
             return document.getElementById(id);

@@ -23,7 +23,7 @@ app.use(async (ctx, next) => {
 });
 
 app.use(ErrorRoutesCatch())
-app.use(oauthRouter(app, { 'prefix': '/oauth' }).routes());
+// app.use(oauthRouter(app, { 'prefix': '/oauth' }).routes());
 app.use(routes);
 
 app.listen(29305, function(){
