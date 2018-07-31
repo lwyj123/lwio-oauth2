@@ -9,6 +9,8 @@ router
   .post('/login/oauth/authorize', authControllers.Authorize)
   .get('/login', authControllers.LoginPage)
   .post('/login', authControllers.Login)
+  .get('/signup', authControllers.SignupPage)
+  .post('/signup', authControllers.Signup)
   // .all('/upload', controllers.upload.default)
   // .get('/api/:name', controllers.api.Get)
   // .post('/api/:name', controllers.api.Post)

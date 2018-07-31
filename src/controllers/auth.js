@@ -95,6 +95,46 @@ class AuthController extends BaseController {
   async Authorize (ctx) {
 
   }
+
+  async SignupPage (ctx) {
+    // for oauth
+    const { client_id, return_to } = ctx.query;
+
+    const renderer = consolidate[templateConfig.engine];
+    if(!renderer){
+      throw new Error(`template engine ${templateConfig.engine} is unsupported`);
+    }
+    // TODO: 根据client_id去拿client的数据，比如client的图片啥的
+    const viewPath = path.resolve(`${templateConfig.basePath}`, `signup.html`)
+    const viewModel = {
+      client: {},
+      signupSubmitUrl: '/signup',
+      return_to: return_to
+    }
+
+    ctx.body = await renderer(viewPath, viewModel);
+  }
+  async Signup (ctx) {
+		let { email, username, password, nickname ,return_to } = ctx.request.body
+
+    if(!return_to || !username || !password || !email || !nickname){
+      throw new Error('return_to、username、password、email、nickname都需要传')
+    }
+
+    return_to = decodeURIComponent(return_to)
+
+    const user = await UserModel.getUserInfoByUsername(username)
+
+    if(user){
+      throw new Error('用户名已存在')
+    }
+
+    //signup successfully
+    ctx.session.loginUser = { 'username': username };
+
+    ctx.redirect(return_to);
+  }
+
 }
 
 module.exports = new AuthController()
