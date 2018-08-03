@@ -6,7 +6,7 @@ const router = compose([
   apiRoutes.routes(),
   apiRoutes.allowedMethods(),
   oauthRoutes.routes(),
-  oauthRoutes.allowedMethods(),
+  oauthRoutes.allowedMethods()
 ])
 
 module.exports = router

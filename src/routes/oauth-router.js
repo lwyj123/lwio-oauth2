@@ -127,7 +127,7 @@
 
 // async function checkLogin(ctx, next){
 // 	var agree = ctx.query.agree == 'true',
-// 		deny = ctx.query.deny == 'true', 
+// 		deny = ctx.query.deny == 'true',
 // 		logout = ctx.query.logout == 'true',
 // 		clientId = ctx.query.client_id,
 // 		{ csrfToken, scope } = ctx.query,
@@ -153,8 +153,8 @@
 // 		return await forwardToLogin(ctx, curRequestUrl);
 // 	}
 
-// 	if(csrfToken && sessCsrfToken && 
-// 		sessCsrfToken.token == csrfToken && 
+// 	if(csrfToken && sessCsrfToken &&
+// 		sessCsrfToken.token == csrfToken &&
 // 		!isExpired(sessCsrfToken.expiresAt) &&
 // 		(agree || deny || logout)){
 // 		if(deny){

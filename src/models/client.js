@@ -19,7 +19,7 @@ const ClientSchema = new Schema({
     type: String,
     required: true
   },
-  access_token_lifetime_second: {  // access token过期时间，单位秒
+  access_token_lifetime_second: { // access token过期时间，单位秒
     type: Number,
     default: 3600
   },
@@ -30,14 +30,14 @@ const ClientSchema = new Schema({
 })
 
 ClientSchema.set('toObject', {
-  transform: function (doc, ret, options) {
+  transform(doc, ret, options) {
     ret.id = ret._id.toString()
     delete ret._id
     delete ret.__v
   }
 })
 
-ClientSchema.statics.createUser = async function ({
+ClientSchema.statics.createClient = async function({
   name,
   display_name,
   client_secret,
@@ -45,19 +45,19 @@ ClientSchema.statics.createUser = async function ({
   access_token_lifetime_second = 3600,
   refresh_token_lifetime_second = 3600 * 24 * 30
 }) {
-  const [clientExist] = await this.find({$or: [
-    { name: name }
-  ]})
-  if(clientExist && clientExist.name === name) {
+  const [clientExist] = await this.find({ $or: [
+    { name }
+  ] })
+  if (clientExist && clientExist.name === name) {
     throw Error('duplicate name')
   }
-  if(!display_name) {
+  if (!display_name) {
     throw Error('need display_name')
   }
-  if(!client_secret) {
+  if (!client_secret) {
     throw Error('need client_secret')
   }
-  if(!redirect_uri) {
+  if (!redirect_uri) {
     throw Error('need redirect_uri')
   }
   const client = new this({
@@ -72,9 +72,9 @@ ClientSchema.statics.createUser = async function ({
   return clientDoc
 }
 
-ClientSchema.statics.getDocById = async function (id) {
-  const [client] = await this.find({_id: id})
-  if(client) {
+ClientSchema.statics.getDocById = async function(id) {
+  const [client] = await this.find({ _id: id })
+  if (client) {
     return client
   }
 }

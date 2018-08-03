@@ -37,9 +37,8 @@ const UserSchema = new Schema({
   }
 })
 
-
 UserSchema.set('toObject', {
-  transform: function (doc, ret, options) {
+  transform(doc, ret, options) {
     ret.id = ret._id
     delete ret._id
     delete ret.password
@@ -48,14 +47,14 @@ UserSchema.set('toObject', {
 })
 
 // 添加用户保存时中间件对password进行bcrypt加密,这样保证用户密码只有用户本人知道
-UserSchema.pre('save', function (next) {
-  var user = this
+UserSchema.pre('save', function(next) {
+  const user = this
   if (this.isModified('password') || this.isNew) {
-    bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.genSalt(10, (err, salt) => {
       if (err) {
         return next(err)
       }
-      bcrypt.hash(user.password, salt, function (err, hash) {
+      bcrypt.hash(user.password, salt, (err, hash) => {
         if (err) {
           return next(err)
         }
@@ -68,27 +67,27 @@ UserSchema.pre('save', function (next) {
   }
 })
 // 校验用户输入密码是否正确
-UserSchema.methods.comparePassword = function (passw, cb) {
+UserSchema.methods.comparePassword = function(passw, cb) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(passw, this.password, (err, isMatch) => {
       cb && cb(err || null, isMatch)
-      if(err) {
-        reject('password did not match')
+      if (err) {
+        reject(new Error('password did not match'))
       }
       resolve()
     })
   })
 }
 
-UserSchema.statics.getUserInfoByUsername = async function (username) {
-  const [user] = await this.find({username: username})
-  if(user && user.username) {
+UserSchema.statics.getUserInfoByUsername = async function(username) {
+  const [user] = await this.find({ username })
+  if (user && user.username) {
     return user
   }
   return null
 }
 
-UserSchema.statics.createUser = async function ({
+UserSchema.statics.createUser = async function({
   username,
   phone,
   email,
@@ -96,21 +95,21 @@ UserSchema.statics.createUser = async function ({
   nickname,
   meta
 }) {
-  const [userExist] = await this.find({$or: [
-    { username: username },
-    { phone: phone },
-    { email: email }
-  ]})
-  if(userExist && userExist.username === username) {
+  const [userExist] = await this.find({ $or: [
+    { username },
+    { phone },
+    { email }
+  ] })
+  if (userExist && userExist.username === username) {
     throw Error('duplicate username')
   }
-  if(userExist && userExist.phone === phone) {
+  if (userExist && userExist.phone === phone) {
     throw Error('duplicate phone')
   }
-  if(userExist && userExist.email === email) {
+  if (userExist && userExist.email === email) {
     throw Error('duplicate email')
   }
-  if(!password) {
+  if (!password) {
     throw Error('need password')
   }
   const user = new this({

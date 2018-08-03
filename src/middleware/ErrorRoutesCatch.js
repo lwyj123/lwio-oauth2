@@ -1,6 +1,6 @@
-module.exports = function () {
-  return function (ctx, next) {
-    return next().catch((err) => {
+module.exports = function() {
+  return function(ctx, next) {
+    return next().catch(err => {
       console.log(err)
       if (err.status) {
         switch (err.status) {

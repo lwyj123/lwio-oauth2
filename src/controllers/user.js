@@ -5,9 +5,9 @@ const UserModel = require('../models/user')
 // const pagination = require('../helpers/page')
 
 class UserApi extends BaseController {
-  async GetUserInfoByUsername (ctx) {
+  async GetUserInfoByUsername(ctx) {
     const user = await UserModel.getUserInfoByUsername(ctx.params.username)
-    if(user) {
+    if (user) {
       ctx.body = {
         ...user.toObject()
       }
@@ -18,7 +18,7 @@ class UserApi extends BaseController {
       }
     }
   }
-  async Signup (ctx) {
+  async Signup(ctx) {
     const { ...params } = ctx.request.body
     const newUser = await UserModel.createUser({
       ...params

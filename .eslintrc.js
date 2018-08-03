@@ -166,6 +166,8 @@ module.exports = {
       }
     ],
 
+    camelcase: ["off"],
+
     // enforce the consistent use of either double or single quotes in JSX attributes
     "jsx-quotes": "error",
 
