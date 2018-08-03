@@ -13,16 +13,16 @@ const templateConfig = {
 	'engine': 'lodash'
 };
 
+const renderer = consolidate[templateConfig.engine];
+if(!renderer) {
+  throw new Error(`template engine ${templateConfig.engine} is unsupported`);
+}
+
 class AuthController extends BaseController {
   async LoginPage (ctx) {
     // for oauth
     const { client_id, return_to } = ctx.query;
-
-    const renderer = consolidate[templateConfig.engine];
-    if(!renderer){
-      throw new Error(`template engine ${templateConfig.engine} is unsupported`);
-    }
-    // TODO: 根据client_id去拿client的数据，比如client的图片啥的
+    
     const viewPath = path.resolve(`${templateConfig.basePath}`, `login.html`)
     const viewModel = {
       client: {},
@@ -64,10 +64,6 @@ class AuthController extends BaseController {
     }
 
     // TODO: client注册信息后面从数据库里面取。开放平台
-    const renderer = consolidate[templateConfig.engine];
-    if(!renderer){
-      throw new Error(`template engine ${templateConfig.engine} is unsupported`);
-    }
     // TODO: 根据client_id去拿client的数据，比如client的图片啥的
     const clientDoc = await ClientModel.getDocById(client_id);
     const viewPath = path.resolve(`${templateConfig.basePath}`, `user-confirm.html`)
@@ -98,13 +94,8 @@ class AuthController extends BaseController {
 
   async SignupPage (ctx) {
     // for oauth
-    const { client_id, return_to } = ctx.query;
+    const { return_to } = ctx.query;
 
-    const renderer = consolidate[templateConfig.engine];
-    if(!renderer){
-      throw new Error(`template engine ${templateConfig.engine} is unsupported`);
-    }
-    // TODO: 根据client_id去拿client的数据，比如client的图片啥的
     const viewPath = path.resolve(`${templateConfig.basePath}`, `signup.html`)
     const viewModel = {
       client: {},
