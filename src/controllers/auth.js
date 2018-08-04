@@ -2,6 +2,7 @@
 // const path = require('path')
 const BaseController = require('./prototype/BaseController')
 const ClientModel = require('../models/client')
+const UserModel = require('../models/user')
 const consolidate = require('consolidate')
 const path = require('path')
 const jwt = require('jsonwebtoken')
@@ -56,6 +57,10 @@ class AuthController extends BaseController {
   async AuthorizePage(ctx) {
     const { client_id, scope, redirect_uri, response_type, state } = ctx.query
     const loginUser = ctx.session.loginUser
+    if (!loginUser) {
+      ctx.redirect(`/login?return_to=${encodeURIComponent(ctx.request.url)}`)
+      return
+    }
 
     const scopes = scope.split(' ')
 
